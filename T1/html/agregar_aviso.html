@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar aviso</title>
+    <link rel="stylesheet" type="text/css" href=../css/styles.css>
+
+</head>
+<body>
+    <section class="menu">
+        <h1>Sistema de Gestión de Adopción de Mascotas</h1>
+        <hr>
+        <a href="listado_adopciones.html" class="botonMenu">Ver listado de adopciones</a>
+        <a href="estadisticas.html" class="botonMenu">Ver Estadísticas</a>
+        <a href="portada.html" class="botonMenu">Volver al inicio</a>
+    </section>
+
+    <section class="contenido">
+        <h2>Agregar aviso de adopción</h2>
+        <hr class="hr_azul">
+
+        <form id="formulario_adopcion" class="formulario_adopcion" method="post" enctype="multipart/form-data">
+            <h3>¿Dónde?:</h3>
+
+            <div class="entradaFormulario">
+                <label for="select_region">Región:</label>
+                <select name="select_region" id="select_region" required>
+                    <option value="">Seleccione una región</option>
+                </select>
+                <div id="error-region" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="select_comuna">Comuna:</label>
+                <select name="select_comuna" id="select_comuna" required>
+                    <option value="">Seleccione una comuna</option>
+                </select>
+                <div id="error-comuna" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="sector">Sector:</label>
+                <input type="text" name="sector" id="sector" required>
+                <div id="error-sector" class="error"></div>
+            </div>
+
+            <h3>¿Contacto de esta publicación?:</h3>
+
+            <div class="entradaFormulario">
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" required>
+                <div id="error-nombre" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+                <div id="error-email" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="telefono">Numero de telefono:</label>
+                <input type="tel" name="telefono" id="telefono" required>
+                <div id="error-celular" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="contacto">Contactar por:</label>
+                <select name="contacto" id="contacto" onchange="medioContacto()">
+                    <option value="">Seleccione una opción</option>
+                    <option value="1">Whatsapp</option>
+                    <option value="2">Telegram</option>
+                    <option value="3">X</option>
+                    <option value="4">Instagram</option>
+                    <option value="5">Tiktok</option>
+                    <option value="6">Otra</option>
+                </select>
+                <div id="error-contactar-por" class="error"></div>
+            </div>
+            <div class="entradaFormulario" id="caja_informacion_contacto" style="display:none;">
+                <label for="informacion_Contacto">ID o URL de contacto:</label>
+                <input type="text" name="informacion_contacto" id="informacion_contacto" minlength="4" maxlength="50">
+                <div id="error-info-contacto" class="error"></div>
+            </div>
+
+            <h3>¿Qué mascota ofrece en adopción?:</h3>
+
+            <div class="entradaFormulario">
+                <label for="tipo_mascota">Tipo:</label>
+                <select name="tipo_mascota" id="tipo_mascota" required>
+                    <option value="">Seleccione un tipo</option>
+                    <option value="gato">Gato</option>
+                    <option value="perro">Perro</option>
+                </select>
+                <div id="error-tipo" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidad" id="cantidad" min="1" required>
+                <div id="error-cantidad" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="edad">Edad:</label>
+                <input type="number" name="edad" id="edad" min="1" required>
+                <div id="error-edad" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="unidad_edad">Unidad medida edad:</label>
+                <select id="unidad_edad" name="unidad_edad">
+                    <option value="">Seleccione una opción</option>
+                    <option value="meses">Meses</option>
+                    <option value="años">Años</option>
+                </select>
+                <div id="error-unidad-edad" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="fecha_entrega">Fecha disponible para entrega:</label>
+                <input type="datetime-local" name="fecha_entrega" id="fecha_entrega" required>
+                <div id="error-fecha-entrega" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="descripcion">Descripción:</label>
+                <textarea name="descripcion" id="descripcion" cols="50" rows="10"></textarea>
+                <div id="error-descripcion" class="error"></div>
+            </div>
+            <div class="entradaFormulario">
+                <label for="foto">Fotos:</label>
+                <input type="file" name="foto" id="foto" accept="image/*" multiple>
+                <button type="button" id="boton_agregar_foto" onclick="agregarFoto()">Agregar Foto</button>
+                <div id="fotos_agregadas"></div>
+                <div id="error-foto" class="error"></div>
+            </div>
+            <button type="button" id="boton_agregar_aviso" onclick="validarFormulario()">Agregar este aviso de adopción</button>
+        </form>
+
+        <div id="confirmacion" class="confirmacion" style="display: none">
+            <h3>¿Está seguro que desea agregar este aviso de adopción?</h3>
+            <button type="button" id="boton_confirmar_aviso" onclick="confirmarEnvio()">Sí, estoy seguro</button>
+            <button type="button" id="boton_cancelar_aviso">No, no estoy seguro, quiero volver al formulario</button>
+        </div>
+
+        <div id="mensaje_exito" class="confirmation" style="display: none">
+            <h3>¡Hemos recibido la información de adopción, muchas gracias y suerte!</h3>
+            <a href="portada.html" class="botonMenu">Volver al inicio</a>
+        </div>
+
+    </section>
+
+
+    <script src="../js/datos.js"></script>
+    <script src="../js/validaciones.js"></script>
+    <script src="../js/agregar_aviso.js"></script>
+</body>
+</html>
