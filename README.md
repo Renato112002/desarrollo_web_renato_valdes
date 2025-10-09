@@ -1,5 +1,5 @@
 
-# Tarea 2 - Desarrollo Web - Renato Valdés
+# Tarea 2 - Desarrollo de Aplicaciones Web - Renato Valdés
 
 Esta tarea corresponde a una aplicación web desarrollada en Flask (Python) que permite publicar, visualizar y gestionar avisos de adopción de mascotas.
 Incluye manejo de base de datos, carga de imágenes, validaciones en el frontend y backend, y estructura modular.
