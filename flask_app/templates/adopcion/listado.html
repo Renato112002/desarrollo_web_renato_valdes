@@ -1,0 +1,56 @@
+{% extends "adopcion/base.html" %}
+{% block title %}Listado de adopciones{% endblock %}
+
+{% block content %}
+<h2>Listado de avisos de adopción</h2>
+<p>Presione un aviso para ver más detalles:</p>
+
+<table id="tabla_listado_adopciones">
+    <thead>
+    <tr>
+        <th>Publicación</th>
+        <th>Entrega</th>
+        <th>Comuna</th>
+        <th>Sector</th>
+        <th>Cantidad</th>
+        <th>Tipo</th>
+        <th>Edad</th>
+        <th>Contacto</th>
+        <th>Fotos</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for aviso in avisos %}
+    <tr data-id="{{ aviso.id }}" onclick="window.location='{{ url_for('detalle', aviso_id=aviso.id) }}'">
+        <td>{{ aviso.fecha_ingreso.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ aviso.fecha_entrega.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ aviso.comuna.nombre }}</td>
+        <td>{{ aviso.sector or '-' }}</td>
+        <td>{{ aviso.cantidad }}</td>
+        <td>{{ aviso.tipo }}</td>
+        <td>{{ aviso.edad }} {{ 'meses' if aviso.unidad_medida == 'm' else 'años' }}</td>
+        <td>{{ aviso.nombre }}</td>
+        <td>{{ aviso.fotos|length }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- === PAGINACIÓN === -->
+{% if total_paginas > 1 %}
+<div class="paginacion">
+    {% if pagina_actual > 1 %}
+    <a href="{{ url_for('listado', pagina=pagina_actual-1) }}" class="botonPaginacion">⟵ Anterior</a>
+    {% endif %}
+
+    <span class="pagina-info">Página {{ pagina_actual }} de {{ total_paginas }}</span>
+
+    {% if pagina_actual < total_paginas %}
+    <a href="{{ url_for('listado', pagina=pagina_actual+1) }}" class="botonPaginacion">Siguiente ⟶</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/listado_adopciones.js') }}"></script>
+{% endblock %}
+

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Adopción{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+
+<body>
+<header class="menu">
+    <h1>Sistema de Gestión de Adopción de Mascotas</h1>
+    <hr>
+</header>
+
+<nav class="navbar">
+    <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}activo{% endif %}">Inicio</a>
+    <a href="{{ url_for('listado') }}" class="{% if request.endpoint == 'listado' %}activo{% endif %}">Listado</a>
+    <a href="{{ url_for('agregar_aviso') }}" class="{% if request.endpoint == 'agregar_aviso' %}activo{% endif %}">Agregar aviso</a>
+    <a href="{{ url_for('estadisticas') }}" class="{% if request.endpoint == 'estadisticas' %}activo{% endif %}">Estadísticas</a>
+</nav>
+
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+{% if mensajes %}
+<section class="mensajes">
+    {% for categoria, mensaje in mensajes %}
+    <p class="flash {{ categoria }}">{{ mensaje }}</p>
+    {% endfor %}
+</section>
+{% endif %}
+{% endwith %}
+
+<main class="contenido">
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

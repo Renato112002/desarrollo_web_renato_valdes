@@ -1,0 +1,75 @@
+{% extends "adopcion/base.html" %}
+{% block title %}Detalle del aviso{% endblock %}
+{% block adopcion_content %}
+
+<h2>Ficha de adopción</h2>
+<hr class="hr_azul">
+
+<section class="ficha">
+    <div class="info_ficha">
+        <h3>Información del aviso</h3>
+        <p><strong>Comuna:</strong> {{ aviso.comuna.nombre }}</p>
+        <p><strong>Sector:</strong> {{ aviso.sector or '-' }}</p>
+        <p><strong>Tipo:</strong> {{ aviso.tipo }}</p>
+        <p><strong>Cantidad:</strong> {{ aviso.cantidad }}</p>
+        <p><strong>Edad:</strong> {{ aviso.edad }} {{ 'meses' if aviso.unidad_medida == 'm' else 'años' }}</p>
+        <p><strong>Fecha publicación:</strong> {{ aviso.fecha_ingreso.strftime("%Y-%m-%d %H:%M") }}</p>
+        <p><strong>Fecha entrega:</strong> {{ aviso.fecha_entrega.strftime("%Y-%m-%d %H:%M") }}</p>
+        <p><strong>Descripción:</strong> {{ aviso.descripcion or 'Sin descripción' }}</p>
+    </div>
+
+    <div class="info_contacto">
+        <h3>Contacto</h3>
+        <p><strong>Nombre:</strong> {{ aviso.nombre }}</p>
+        <p><strong>Email:</strong> {{ aviso.email }}</p>
+        {% if aviso.celular %}
+        <p><strong>Celular:</strong> {{ aviso.celular }}</p>
+        {% endif %}
+
+        {% if contactos %}
+        <p><strong>Contactar por:</strong></p>
+        <ul class="lista-contactos">
+            {% for c in contactos %}
+            <li>
+                <span class="contacto-medio">{{ c.nombre|capitalize }}:</span>
+                <span class="contacto-id">{{ c.identificador }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <div class="fotos_ficha">
+        <h3>Fotos del aviso</h3>
+        {% if fotos %}
+        <div class="galeria-fotos">
+            {% for f in fotos %}
+            <img src="{{ url_for('static', filename='uploads/' + f.nombre_archivo) }}"
+                 alt="Foto aviso"
+                 class="foto-miniatura"
+                 onclick="mostrarFotoGrande('{{ url_for('static', filename='uploads/' + f.nombre_archivo) }}')">
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No hay fotos disponibles.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ==== MODAL DE FOTO AMPLIADA ==== -->
+<div id="visorFoto" class="modal-foto" onclick="cerrarFoto()">
+    <div class="contenido-foto" onclick="event.stopPropagation()">
+        <img id="fotoAmpliada" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Foto ampliada">
+    </div>
+    <button class="boton boton-primario boton-cerrar" onclick="cerrarFoto()">Cerrar ×</button>
+</div>
+
+<!-- ==== BOTONES DE NAVEGACIÓN ==== -->
+<div class="menuInferior">
+    <a href="{{ url_for('index') }}" class="boton boton-primario">Volver al inicio</a>
+    <a href="{{ url_for('listado') }}" class="boton boton-secundario">Ver listado</a>
+</div>
+
+<script src="{{ url_for('static', filename='js/detalle.js') }}"></script>
+
+{% endblock %}

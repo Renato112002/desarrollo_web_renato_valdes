@@ -1,250 +1,197 @@
-function validarLongitud(texto, min, max) {
-    return texto.length >= min && texto.length <= max;
-}
+document.addEventListener("DOMContentLoaded", () => {
+    const validarLongitud = (t, min, max) => t.length >= min && t.length <= max;
+    const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 100;
+    const validarTelefono = t => /^\+\d{3}\.\d{8}$/.test(t);
 
-function validarEmail(email) {
-    let lengthValid = email.length <= 100;
+    const regionSelect = document.getElementById("select_region");
+    const comunaSelect = document.getElementById("select_comuna");
 
-    let re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    let formatValid = re.test(email);
-
-    return lengthValid && formatValid;
-}
-
-function validarTelefono(telefono) {
-    let lengthValid = telefono.length >= 8;
-
-    let re = /^\+\d{3}\.\d{8}$/;
-    let formatValid = re.test(telefono.replace(/\s/g, ''));
-
-    return lengthValid && formatValid;
-}
-
-function validarFormulario() {
-    let valido = true;
-
-    const region = document.getElementById('select_region');
-    const comuna = document.getElementById('select_comuna');
-    const sector = document.getElementById('sector');
-    const nombre = document.getElementById('nombre');
-    const email = document.getElementById('email');
-    const telefono = document.getElementById('telefono');
-    const contacto = document.getElementById('contacto');
-    const informacion_contacto = document.getElementById('informacion_contacto');
-    const tipoMascota = document.getElementById('tipo_mascota');
-    const cantidad = document.getElementById('cantidad');
-    const edad = document.getElementById('edad');
-    const unidadEdad = document.getElementById('unidad_edad');
-    const fechaEntrega = document.getElementById('fecha_entrega');
-    const descripcion = document.getElementById('descripcion');
-    const foto = document.getElementById('foto');
-
-    if (!region.value) {
-        document.getElementById("error-region").textContent = 'Debe selecionar una region';
-        valido = false;
-    }
-    if (!comuna.value) {
-        document.getElementById("error-comuna").textContent = 'Debe selecionar una comuna';
-        valido = false;
-    }
-    if (!nombre.value) {
-        document.getElementById("error-nombre").textContent = 'El nombre de contacto es obligatorio';
-        valido = false;
-    } else if (!validarLongitud(nombre, 3, 200)) {
-        document.getElementById("error-nombre").textContent = 'El nombre de contacto debe tener entre 3 y 200 caracteres';
-        valido = false;
-    }
-    if (!email.value) {
-        document.getElementById("error-email").textContent = 'El email es obligatorio';
-        valido = false;
-    } else if (!validarEmail(email)) {
-        document.getElementById("error-email").textContent = 'El formato de email no es válido';
-        valido = false;
-    }
-    if (!validarTelefono(telefono)) {
-        document.getElementById("error-celular").textContent = 'El formato de telefono no es válido';
-        valido = false;
-    }
-    if(!validarLongitud(contacto, 4 , 50)) {
-        document.getElementById("error-celular").textContent = 'Debe tener entre 4 y 50 caracteres';
-        valido = false;
-    }
-    if (!tipoMascota.value) {
-        document.getElementById("error-tipo").textContent = 'El tipo de mascota es obligatorio';
-        valido = false;
-    }
-    if (!cantidad.value) {
-        document.getElementById("error-cantidad").textContent = 'La cantidad es obligatorio';
-        valido = false;
-    } else if (typeof cantidad !== 'number'  || !Number.isInteger(parseFloat(cantidad))) {
-        document.getElementById("error-cantidad").textContent = 'La cantidad debe ser un numero entero';
-        valido = false;
-    } else if (!cantidad < 1) {
-        document.getElementById("error-cantidad").textContent = 'La cantidad debe ser mayor o igual a 1';
-        valido = false;
-    }
-    if (!edad.value) {
-        document.getElementById("error-edad").textContent = 'La edad es obligatoria';
-        valido = false;
-    } else if (typeof edad !== 'number'  || !Number.isInteger(parseFloat(edad))) {
-        document.getElementById("error-edad").textContent = 'La edad debe ser un numero entero';
-        valido = false;
-    } else if (!edad < 1) {
-        document.getElementById("error-edad").textContent = 'La edad debe ser mayor o igual a 1';
-        valido = false;
-    }
-    if(!unidadEdad.value) {
-        document.getElementById("error-unidad-edad").textContent = 'La unidad es obligatoria';
-        valido = false;
-    }
-    if (!fechaEntrega.value) {
-        document.getElementById("error-fecha-entrega").textContent = 'La fecha entrega es obligatoria';
-        valido = false;
-        errores.push('');
-    } else {
-        const fechaMinima = new Date(fechaEntrega.min);
-        const fechaSeleccionada = new Date(fechaEntrega.value);
-        if (fechaSeleccionada < fechaMinima) {
-            document.getElementById("error-fecha-entrega").textContent = 'La fecha entrega debe ser mayor o igual en 3 horas a la fecha actual';
-            valido = false;
-        }
-    }
-    if (fotosCargadas.length === 0) {
-        document.getElementById("error-foto").textContent = 'Debe cargar al menos una foto';
-        valido = false;
-    } else if (fotosCargadas.length > 5) {
-        document.getElementById("error-foto").textContent = 'No puede cargar mas de 5 fotos';
-        valido = false;
-    }
-
-    if (valido) {
-        document.getElementById('boton_confirmar_aviso').style.display = 'block';
-        document.getElementById('formulario_adopcion').style.display = 'none';
-    }
-    return valido;
-}
-
-function confirmarEnvio() {
-    document.getElementById('confirmacion').style.display = 'none';
-    document.getElementById('mensaje_exito').style.display = 'block';
-}
-
-function cancelarEnvio() {
-    document.getElementById('confirmacion').style.display = 'none';
-    document.getElementById('formulario_adopcion').style.display = 'block';
-}
-
-
-const poblarRegiones = () => {
-    let regionSelect = document.getElementById("select_region");
-    while (regionSelect.options.length > 1) {
-        regionSelect.remove(1);
-    }
-    region_comuna.regiones.forEach(region => {
-        let option = document.createElement("option");
-        option.value = region.numero;
-        option.text = region.nombre;
-        regionSelect.appendChild(option);
-    });
-};
-
-const actualizarComunas = () => {
-    let regionSelect = document.getElementById("select_region");
-    let comunaSelect = document.getElementById("select_comuna");
-    let selectedRegion = regionSelect.value;
-
-    comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
-
-    let region =region_comuna.regiones.find(r => r.numero == selectedRegion);
-
-    if (region) {
-        region.comunas.forEach(comuna => {
-            let option = document.createElement("option");
-            option.value = comuna.id;
-            option.text = comuna.nombre;
-            comunaSelect.appendChild(option);
+    if (regionSelect && comunaSelect) {
+        regionSelect.addEventListener("change", () => {
+            const regionId = regionSelect.value;
+            comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+            if (window.comunasPorRegion && window.comunasPorRegion[regionId]) {
+                window.comunasPorRegion[regionId].forEach(comuna => {
+                    const opt = document.createElement("option");
+                    opt.value = comuna.id;
+                    opt.textContent = comuna.nombre;
+                    comunaSelect.appendChild(opt);
+                });
+            }
         });
     }
-    changeArguments();
-};
 
-function changeArguments() {
-    const comunaSelect = document.getElementById("select_comuna");
-    const reasonLabel = document.querySelector("label[for='comments']");
-    const reasonTextarea = document.getElementById("comments");
+    const inputFecha = document.getElementById("fecha_entrega");
+    if (inputFecha) {
+        const ahora = new Date();
+        ahora.setHours(ahora.getHours() + 3);
+        const año = ahora.getFullYear();
+        const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+        const dia = String(ahora.getDate()).padStart(2, "0");
+        const hora = String(ahora.getHours()).padStart(2, "0");
+        const minuto = String(ahora.getMinutes()).padStart(2, "0");
+        const fechaFormateada = `${año}-${mes}-${dia}T${hora}:${minuto}`;
 
-    if (comunaSelect.value !== "") {
-        reasonLabel.style.display = "block";
-        reasonTextarea.style.display = "block";
-    } else {
-        reasonLabel.style.display = "none";
-        reasonTextarea.style.display = "none";
-    }
-}
-
-function medioContacto() {
-    const opciones = document.getElementById("contacto");
-    const infoContacto = document.getElementById('caja_informacion_contacto');
-
-    if (opciones.value) {
-        infoContacto.style.display = "block";
-    }
-    else {
-        infoContacto.style.display = "none";
-    }
-}
-
-function fechaMinima() {
-    const fechaEntrega = document.getElementById('fecha_entrega');
-    fechaEntrega.type = "datetime-local";
-
-    const fechaActual = new Date();
-    fechaActual.setHours(fechaActual.getHours() + 3);
-
-    const aaaa = fechaActual.getFullYear();
-    const mm = String(fechaActual.getMonth() + 1).padStart(2, '0');
-    const dd = String(fechaActual.getDate()).padStart(2, '0');
-    const hh = String(fechaActual.getHours()).padStart(2, '0');
-    const minutos = String(fechaActual.getMinutes()).padStart(2, '0');
-
-    fechaEntrega.value = `${aaaa}-${mm}-${dd} ${hh}:${minutos}`;
-}
-
-let fotosCargadas = [];
-
-function agregarFoto() {
-    const fotosSubidas = document.getElementById('foto');
-    const fotos = document.querySelectorAll('input[type="file"]');
-
-    if (fotosCargadas.length >= 5) {
-        alert("Máximo de 5 fotos permitidas")
-        return;
+        inputFecha.value = fechaFormateada;
+        inputFecha.min = fechaFormateada;
     }
 
-    const nuevaFoto = document.createElement('input');
-    nuevaFoto.type = 'file';
-    nuevaFoto.name = 'foto';
-    nuevaFoto.accept = 'image/*';
-    nuevaFoto.style.marginTop = '10px';
+    const contenedorFotos = document.getElementById("fotos-container");
+    const botonAgregarFoto = document.getElementById("agregar-foto");
+    const mensajeErrorFoto = document.getElementById("foto-error");
 
-    fotosCargadas.appendChild(nuevaFoto);
-}
+    if (botonAgregarFoto && contenedorFotos) {
+        botonAgregarFoto.addEventListener("click", e => {
+            e.preventDefault();
+            const total = contenedorFotos.querySelectorAll("input[type='file']").length;
+            if (total >= 5) {
+                mensajeErrorFoto.textContent = "Máximo 5 fotos permitidas.";
+                return;
+            }
+            const nuevo = document.createElement("input");
+            nuevo.type = "file";
+            nuevo.name = "fotos[]";
+            nuevo.accept = "image/*";
+            contenedorFotos.appendChild(nuevo);
+            mensajeErrorFoto.textContent = "";
+        });
+    }
 
-document.getElementById("select_region").addEventListener("change", actualizarComunas);
-document.getElementById("select_comuna").addEventListener("change", changeArguments);
+    const contenedorContactos = document.getElementById("contactos-container");
+    const botonAgregarContacto = document.getElementById("agregar-contacto");
+    const mensajeErrorContacto = document.getElementById("contacto-error");
 
-window.onload = () => {
-    poblarRegiones();
-    changeArguments();
-    fechaMinima();
-    medioContacto();
+    if (botonAgregarContacto && contenedorContactos) {
+        botonAgregarContacto.addEventListener("click", e => {
+            e.preventDefault();
+            const total = contenedorContactos.querySelectorAll(".contacto-item").length;
+            if (total >= 5) {
+                mensajeErrorContacto.textContent = "Máximo 5 contactos permitidos.";
+                return;
+            }
+            const nuevo = document.createElement("div");
+            nuevo.classList.add("contacto-item");
+            nuevo.innerHTML = `
+                <select name="contactar_por[]" class="select-contacto" required>
+                    <option value="">Seleccione...</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="telegram">Telegram</option>
+                    <option value="X">X</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="otra">Otra</option>
+                </select>
+                <input type="text" name="contacto_info[]" class="input-contacto"
+                       placeholder="ID o URL (4-50 caracteres)" minlength="4" maxlength="50">
+            `;
+            contenedorContactos.appendChild(nuevo);
+            mensajeErrorContacto.textContent = "";
+        });
+    }
 
-    document.getElementById("select_region").addEventListener("change", actualizarComunas);
-    document.getElementById("contacto").addEventListener("change", medioContacto);
+    function validarFormularioPersonalizado() {
+        let valido = true;
+        const errores = {};
+        const region = regionSelect.value;
+        const comuna = comunaSelect.value;
+        const nombre = document.getElementById("nombre").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const celular = document.getElementById("celular").value.trim();
+        const tipo = document.getElementById("tipo").value;
+        const cantidad = document.getElementById("cantidad").value;
+        const edad = document.getElementById("edad").value;
+        const fechaEntrega = document.getElementById("fecha_entrega").value;
+        const fotos = contenedorFotos.querySelectorAll("input[type='file']");
 
-    document.getElementById("boton_agregar_foto").addEventListener("click", agregarFoto);
-    document.getElementById("boton_agregar_aviso").addEventListener("click", validarFormulario);
+        if (!region) { errores.region = "Debe seleccionar una región"; valido = false; }
+        if (!comuna) { errores.comuna = "Debe seleccionar una comuna"; valido = false; }
+        if (!validarLongitud(nombre, 3, 200)) { errores.nombre = "El nombre debe tener entre 3 y 200 caracteres"; valido = false; }
+        if (!validarEmail(email)) { errores.email = "Ingrese un email válido"; valido = false; }
+        if (!validarTelefono(celular)) { errores.celular = "Formato inválido. Ejemplo: +569.12345678"; valido = false; }
+        if (!tipo) { errores.tipo = "Seleccione tipo de mascota"; valido = false; }
+        if (cantidad < 1) { errores.cantidad = "Cantidad debe ser ≥ 1"; valido = false; }
+        if (edad < 1) { errores.edad = "Edad debe ser ≥ 1"; valido = false; }
+        if (!fechaEntrega) { errores.fecha_entrega = "Debe indicar fecha de entrega"; valido = false; }
+        else if (inputFecha && fechaEntrega < inputFecha.min) {
+            errores.fecha_entrega = "La fecha debe ser posterior a la actual (+3 horas)";
+            valido = false;
+        }
+        if (fotos.length < 1) { errores.fotos = "Debe subir al menos una foto"; valido = false; }
 
-    document.getElementById("boton_confirmar_aviso").addEventListener("click", confirmarEnvio);
-    document.getElementById("boton_cancelar_aviso").addEventListener("click", cancelarEnvio);
-};
+        document.querySelectorAll(".mensaje-error").forEach(e => e.textContent = "");
+        for (const campo in errores) {
+            const el = document.getElementById(`error-${campo}`);
+            if (el) el.textContent = errores[campo];
+        }
+        return valido;
+    }
+
+    const formulario = document.getElementById("formulario_adopcion");
+    const modal = document.getElementById("confirmacionModal");
+    const btnConfirmar = document.getElementById("btnConfirmar");
+    const btnCancelar = document.getElementById("btnCancelar");
+
+    formulario.addEventListener("submit", e => {
+        if (!formulario.checkValidity()) {
+            e.preventDefault();
+            formulario.reportValidity();
+            return;
+        }
+
+        e.preventDefault();
+        if (!validarFormularioPersonalizado()) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        modal.style.display = "flex";
+    });
+
+    btnConfirmar.addEventListener("click", async () => {
+        modal.style.display = "none";
+        const formData = new FormData(formulario);
+
+        try {
+            const resp = await fetch("/agregar", { method: "POST", body: formData });
+            const data = await resp.json();
+
+            if (data.ok) {
+                mostrarModalExito();
+            } else {
+                alert("Error al guardar el aviso en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error al enviar:", err);
+            alert("Ocurrió un error al enviar el formulario.");
+        }
+    });
+
+    btnCancelar.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    function mostrarModalExito() {
+        const modalExito = document.createElement("div");
+        modalExito.classList.add("modal");
+        modalExito.style.display = "flex";
+        modalExito.innerHTML = `
+        <div class="modal-content" style="max-width: 480px;">
+            <h3 style="color:#1a4a7a; margin-bottom:10px;">Aviso publicado correctamente!!</h3>
+            <p style="color:#333; margin-bottom:25px;">Gracias por compartir este aviso de adopción.<br>Tu publicación ha sido registrada con éxito.</p>
+            <div class="botones-modal">
+                <button id="btnVolverInicio" class="botonFormulario">Volver al inicio</button>
+                <button id="btnNuevoAviso" class="botonSecundario">Agregar otro aviso</button>
+            </div>
+        </div>
+    `;
+        document.body.appendChild(modalExito);
+
+        document.getElementById("btnVolverInicio").addEventListener("click", () => {
+            window.location.href = "/";
+        });
+
+        document.getElementById("btnNuevoAviso").addEventListener("click", () => {
+            window.location.href = "/agregar";
+        });
+    }
+});

@@ -1,0 +1,43 @@
+{% extends "adopcion/base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block adopcion_content %}
+<h2>Bienvenido al sistema de adopción</h2>
+<p>Este sistema permite gestionar y facilitar el proceso de adopción de perros y gatos.</p>
+<h3>Últimos 5 avisos de adopción</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>Fecha publicación</th>
+        <th>Comuna</th>
+        <th>Sector</th>
+        <th>Cantidad</th>
+        <th>Tipo</th>
+        <th>Edad</th>
+        <th>Foto</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for aviso in avisos %}
+    <tr onclick="window.location='{{ url_for('detalle', aviso_id=aviso.id) }}'">
+        <td>{{ aviso.fecha_ingreso.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td>{{ aviso.comuna.nombre }}</td>
+        <td>{{ aviso.sector or '-' }}</td>
+        <td>{{ aviso.cantidad }}</td>
+        <td>{{ aviso.tipo }}</td>
+        <td>{{ aviso.edad }} {{ 'Meses' if aviso.unidad_medida == 'm' else 'Años' }}</td>
+        <td>
+            {% if aviso.fotos %}
+            <img src="{{ url_for('static', filename='uploads/' + aviso.fotos[0].nombre_archivo) }}"
+                 class="fotoTablaMini"
+                 alt="Mascota">
+            {% else %}
+            Sin foto
+            {% endif %}
+        </td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

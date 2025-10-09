@@ -1,9 +1,12 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const tabla = document.querySelector("#tabla_listado_adopciones");
-    const filas = tabla.querySelectorAll("tbody tr");
-    filas.forEach(fila => {
+document.addEventListener("DOMContentLoaded", () => {
+    const filas = document.querySelectorAll("#tabla_listado_adopciones tbody tr");
+
+    filas.forEach((fila) => {
         fila.addEventListener("click", () => {
-            window.location.href = "ficha_adopcion.html"
+            const avisoId = fila.dataset.id;
+            if (avisoId) {
+                window.location.href = `/detalle/${avisoId}`;
+            }
         });
     });
 });
