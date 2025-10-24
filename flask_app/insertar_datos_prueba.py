@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import random
 import os
 
-# Codigo para insertar 50 avisos random a la base de datos para probar
+# Código para insertar 50 avisos random a la base de datos para pruebas
 
 session = get_session()
 
@@ -12,21 +12,19 @@ comunas = session.query(Comuna).all()
 tipos = ["gato", "perro"]
 sectores = ["Centro", "Norte", "Sur", "Oriente", "Poniente"]
 
-imagenes_tipo = {
-    "gato": os.path.join("static", "svg", "Gato1.png"),
-    "perro": os.path.join("static", "svg", "Perro1.png"),
-}
+ruta_imagen = os.path.join("static", "svg", "Gato1.png")
+nombre_archivo = os.path.basename(ruta_imagen)
 
-avisos = []
 for i in range(1, 51):
     comuna = random.choice(comunas)
     tipo = random.choice(tipos)
+
     aviso = AvisoAdopcion(
         fecha_ingreso=datetime.now() - timedelta(days=random.randint(0, 30)),
         comuna_id=comuna.id,
         sector=random.choice(sectores),
-        nombre=f"Nombre {i}",
-        email=f"email{i}@gmail.com",
+        nombre=f"Nombre",
+        email=f"email@gmail.com",
         celular="+569.99999999",
         tipo=tipo,
         cantidad=random.randint(1, 4),
@@ -35,16 +33,9 @@ for i in range(1, 51):
         fecha_entrega=datetime.now() + timedelta(days=random.randint(1, 10)),
         descripcion=f"Descripción de prueba {i}"
     )
+
     session.add(aviso)
-
-session.commit()  # 🔐 Generar los IDs
-
-avisos = session.query(AvisoAdopcion).order_by(AvisoAdopcion.id.desc()).limit(50).all()
-
-for aviso in avisos:
-    tipo = aviso.tipo
-    ruta_imagen = imagenes_tipo.get(tipo, imagenes_tipo[tipo])
-    nombre_archivo = os.path.basename(ruta_imagen)
+    session.flush()
 
     foto = Foto(
         aviso_id=aviso.id,
@@ -55,5 +46,3 @@ for aviso in avisos:
 
 session.commit()
 session.close()
-
-print("Se insertaron 50 avisos de prueba.")

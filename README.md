@@ -1,8 +1,8 @@
 
-# Tarea 2 - Desarrollo de Aplicaciones Web - Renato Valdés
+# Tarea 3 - Desarrollo de Aplicaciones Web - Renato Valdés
 
 Esta tarea corresponde a una aplicación web desarrollada en Flask (Python) que permite publicar, visualizar y gestionar avisos de adopción de mascotas.
-Incluye manejo de base de datos, carga de imágenes, validaciones en el frontend y backend, y estructura modular.
+Incluye manejo de base de datos, carga de imágenes, validaciones en el frontend y backend.
 
 # Detalles y decisiones de diseño
 
@@ -15,7 +15,9 @@ El flujo para la visualizacion de la pagina es:
 1. `flask_app/database/init_db.py`  
 2. `flask_app/database/tarea2.sql`
 3. `flask_app/database/region-comuna.sql`
-4. `flask run`
+4. `flask_app/database/tabla-comentario.sql`
+5. (OPCIONAL) `flask_app/database/insertar_datos_prueba.sql`
+6. `flask run`
 
 ## Archivos adicionales creados
 
@@ -44,3 +46,12 @@ Estas validaciones evitan errores comunes al momento de guardar un aviso.
 ## Manejo de fotos
 
 Las imágenes se almacenan en la carpeta `/static/uploads/`.
+
+
+## Generación de gráficos (Estadísticas)
+
+Para la generacion de en la sección de Estadísticas se utiliza la biblioteca: 
+ 
+ **Highcharts** https://www.highcharts.com/blog/products/highcharts/ 
+
+Los gráficos se generan mediante **fetch (XHR)** hacia Flask, obteniendo los datos desde la base de datos en formato JSON.

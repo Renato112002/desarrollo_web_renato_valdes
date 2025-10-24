@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Enum, DateTime, Text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, joinedload
 from datetime import datetime
+from sqlalchemy.sql import func
 
 DB_USERNAME = "cc5002"
 DB_PASSWORD = "programacionweb"
@@ -21,7 +22,6 @@ class Region(Base):
 
     comunas = relationship("Comuna", back_populates="region")
 
-
 class Comuna(Base):
     __tablename__ = "comuna"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -29,8 +29,7 @@ class Comuna(Base):
     region_id = Column(Integer, ForeignKey("region.id"), nullable=False)
 
     region = relationship("Region", back_populates="comunas")
-    avisos = relationship("AvisoAdopcion", back_populates="comuna")  # ✅ relación correcta
-
+    avisos = relationship("AvisoAdopcion", back_populates="comuna")
 
 class AvisoAdopcion(Base):
     __tablename__ = "aviso_adopcion"
@@ -51,7 +50,7 @@ class AvisoAdopcion(Base):
     comuna = relationship("Comuna", back_populates="avisos")
     fotos = relationship("Foto", back_populates="aviso", cascade="all, delete-orphan")
     contactos = relationship("ContactarPor", back_populates="aviso", cascade="all, delete-orphan")
-
+    comentarios = relationship("Comentario", back_populates="aviso", cascade="all, delete-orphan")
 
 class Foto(Base):
     __tablename__ = "foto"
@@ -70,6 +69,17 @@ class ContactarPor(Base):
     aviso_id = Column(Integer, ForeignKey("aviso_adopcion.id"), nullable=False)
 
     aviso = relationship("AvisoAdopcion", back_populates="contactos")
+
+class Comentario(Base):
+    __tablename__ = "comentario"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime(timezone=True), server_default=func.now())
+    aviso_id = Column(Integer, ForeignKey("aviso_adopcion.id"), nullable=False)
+
+    aviso = relationship("AvisoAdopcion", back_populates="comentarios")
 
 def get_session():
     """Devuelve una sesión nueva."""
@@ -153,3 +163,35 @@ def obtener_avisos_paginados(pagina, por_pagina):
 
     session.close()
     return avisos
+
+def crear_comentario(aviso_id, nombre, texto):
+    """Crea un nuevo comentario en la base de datos."""
+    session = get_session()
+    try:
+        comentario = Comentario(
+            aviso_id=aviso_id,
+            nombre=nombre,
+            texto=texto,
+            fecha=datetime.now()
+        )
+        session.add(comentario)
+        session.commit()
+        return comentario.id
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+
+def obtener_comentarios_por_aviso(aviso_id):
+    """Obtiene todos los comentarios de un aviso ordenados por fecha descendente."""
+    session = get_session()
+    comentarios = (
+        session.query(Comentario)
+        .filter_by(aviso_id=aviso_id)
+        .order_by(Comentario.fecha.desc())
+        .all()
+    )
+    session.close()
+    return comentarios

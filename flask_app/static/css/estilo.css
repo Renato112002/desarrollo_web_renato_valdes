@@ -1095,3 +1095,24 @@ body, html {
     margin-right: 5px;
 }
 
+.comentarios-lista {
+    margin-top: 10px;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.comentario-item {
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+}
+
+.comentario-item p {
+    margin: 2px 0;
+}
+
+.comentario-item strong {
+    color: #0d3c61;
+}
+
+

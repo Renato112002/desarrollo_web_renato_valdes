@@ -1,12 +1,14 @@
 import math
 import os
+
 import matplotlib
+
 matplotlib.use('Agg')
 from datetime import datetime
 from flask import render_template
 from database.db import get_session
-
-from flask import Flask, request, jsonify
+import re
+from flask import Flask, request
 
 from database.db import (
     crear_aviso,
@@ -14,8 +16,9 @@ from database.db import (
     obtener_aviso_por_id,
     Region,
     Comuna,
-    contar_avisos,  # 👈 agregado
-    obtener_avisos_paginados
+    contar_avisos,
+    obtener_avisos_paginados,
+    AvisoAdopcion,
 )
 from utils.validations import validar_aviso
 
@@ -148,6 +151,116 @@ def detalle(aviso_id):
 @app.route("/estadisticas")
 def estadisticas():
     return render_template("adopcion/estadisticas.html")
+
+# ==========================================================
+# RUTAS DE COMENTARIOS
+# ==========================================================
+from database.db import crear_comentario, obtener_comentarios_por_aviso
+
+@app.get("/comentarios/<int:aviso_id>")
+def listar_comentarios(aviso_id):
+    try:
+        comentarios = obtener_comentarios_por_aviso(aviso_id)
+        # Serializa para JSON
+        data = [{
+            "id": c.id,
+            "nombre": c.nombre,
+            "texto": c.texto,
+            "fecha": (c.fecha.strftime("%Y-%m-%d %H:%M") if c.fecha else "")
+        } for c in comentarios]
+        return jsonify(data), 200
+    except Exception:
+        return jsonify({"ok": False, "mensaje": "Error al obtener comentarios"}), 500
+
+@app.post("/comentarios/<int:aviso_id>")
+def agregar_comentario(aviso_id):
+    try:
+        payload = request.get_json(silent=True) or {}
+        nombre = (payload.get("nombre") or "").strip()
+        texto  = (payload.get("texto")  or "").strip()
+
+        # Validaciones lado servidor
+        errores = []
+        if not (3 <= len(nombre) <= 80):
+            errores.append("El nombre debe tener entre 3 y 80 caracteres.")
+        elif not re.match(r"^[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]+$", nombre):
+            errores.append("El nombre solo puede contener letras y espacios.")
+
+        if len(texto) < 5 or len(texto) > 300:
+            errores.append("El comentario debe tener entre 5 y 300 caracteres.")
+
+        if errores:
+            return jsonify({"ok": False, "errores": errores}), 400
+
+        crear_comentario(aviso_id, nombre, texto)
+        return jsonify({"ok": True, "mensaje": "Comentario agregado correctamente."}), 200
+
+    except Exception:
+
+        return jsonify({"ok": False, "mensaje": "Ocurrió un error al enviar el comentario."}), 500
+
+from sqlalchemy import func, extract
+from flask import jsonify
+
+@app.route("/api/estadisticas")
+def api_estadisticas():
+    session = get_session()
+
+    # Avisos por día ===
+    avisos_por_dia = (
+        session.query(
+            func.date(AvisoAdopcion.fecha_ingreso).label("dia"),
+            func.count(AvisoAdopcion.id)
+        )
+        .group_by(func.date(AvisoAdopcion.fecha_ingreso))
+        .order_by(func.date(AvisoAdopcion.fecha_ingreso))
+        .all()
+    )
+    dias = [str(a.dia) for a in avisos_por_dia]
+    conteos_dia = [a[1] for a in avisos_por_dia]
+
+    # Total por tipo ===
+    avisos_por_tipo = (
+        session.query(AvisoAdopcion.tipo, func.count(AvisoAdopcion.id))
+        .group_by(AvisoAdopcion.tipo)
+        .all()
+    )
+    tipos = [a[0] for a in avisos_por_tipo]
+    conteos_tipo = [a[1] for a in avisos_por_tipo]
+
+    # Gatos y perros por mes ===
+    avisos_por_mes_tipo = (
+        session.query(
+            extract('month', AvisoAdopcion.fecha_ingreso).label('mes'),
+            AvisoAdopcion.tipo,
+            func.count(AvisoAdopcion.id)
+        )
+        .group_by('mes', AvisoAdopcion.tipo)
+        .order_by('mes')
+        .all()
+    )
+
+    meses_dict = {}
+    for mes, tipo, cantidad in avisos_por_mes_tipo:
+        mes = int(mes)
+        if mes not in meses_dict:
+            meses_dict[mes] = {"gato": 0, "perro": 0}
+        meses_dict[mes][tipo] = cantidad
+
+    nombres_meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                     "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+
+    meses_ordenados = sorted(meses_dict.keys())
+    meses_nombres = [nombres_meses[m - 1] for m in meses_ordenados]
+    gatos = [meses_dict[m]["gato"] for m in meses_ordenados]
+    perros = [meses_dict[m]["perro"] for m in meses_ordenados]
+
+    session.close()
+    return jsonify({
+        "lineas": {"dias": dias, "valores": conteos_dia},
+        "torta": {"tipos": tipos, "valores": conteos_tipo},
+        "barras": {"meses": meses_nombres, "gatos": gatos, "perros": perros}
+    })
 
 # ==========================================================
 # MAIN

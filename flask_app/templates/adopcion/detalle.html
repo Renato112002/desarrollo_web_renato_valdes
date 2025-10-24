@@ -56,7 +56,6 @@
     </div>
 </section>
 
-<!-- ==== MODAL DE FOTO AMPLIADA ==== -->
 <div id="visorFoto" class="modal-foto" onclick="cerrarFoto()">
     <div class="contenido-foto" onclick="event.stopPropagation()">
         <img id="fotoAmpliada" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Foto ampliada">
@@ -64,12 +63,38 @@
     <button class="boton boton-primario boton-cerrar" onclick="cerrarFoto()">Cerrar ×</button>
 </div>
 
-<!-- ==== BOTONES DE NAVEGACIÓN ==== -->
+<section id="comentarios">
+    <h3>Comentarios</h3>
+
+    <div id="lista_comentarios" class="comentarios-lista"></div>
+
+    <h4>Agregar comentario</h4>
+    <form id="form_comentario" class="form-comentario">
+        <div class="entradaFormulario">
+            <label for="nombre_comentario">Nombre:</label>
+            <input type="text" id="nombre_comentario" required minlength="3" maxlength="80">
+        </div>
+
+        <div class="entradaFormulario">
+            <label for="texto_comentario">Comentario:</label>
+            <textarea id="texto_comentario" rows="4" cols="50" minlength="5" maxlength="300" required></textarea>
+        </div>
+
+        <div style="text-align:center; margin-top:10px;">
+            <button type="submit" class="boton boton-primario">Agregar comentario</button>
+        </div>
+
+        <p id="mensaje_comentario" class="mensaje"></p>
+    </form>
+</section>
+
 <div class="menuInferior">
     <a href="{{ url_for('index') }}" class="boton boton-primario">Volver al inicio</a>
     <a href="{{ url_for('listado') }}" class="boton boton-secundario">Ver listado</a>
 </div>
 
 <script src="{{ url_for('static', filename='js/detalle.js') }}"></script>
+<script src="{{ url_for('static', filename='js/comentarios.js') }}"></script>
+
 
 {% endblock %}

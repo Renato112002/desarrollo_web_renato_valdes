@@ -1,6 +1,7 @@
 {% extends "adopcion/base.html" %}
 {% block title %}Estadísticas{% endblock %}
 {% block adopcion_content %}
+
 <h2>Estadísticas de adopciones</h2>
 <p style="margin-bottom: 25px;">
     A continuación se muestran diversas estadísticas sobre los avisos registrados.
@@ -9,21 +10,29 @@
 <div class="contenedor_graficos">
     <div class="grafico">
         <h3>Cantidad de avisos por día</h3>
-        <img src="{{ url_for('static', filename='svg/grafico_lineas.png') }}" alt="Gráfico de líneas">
+        <div id="grafico_lineas" style="height: 300px;"></div>
     </div>
 
     <div class="grafico">
         <h3>Distribución por tipo de mascota</h3>
-        <img src="{{ url_for('static', filename='svg/grafico_torta.png') }}" alt="Gráfico de torta">
+        <div id="grafico_torta" style="height: 300px;"></div>
     </div>
 
     <div class="grafico">
         <h3>Avisos de gatos y perros por mes</h3>
-        <img src="{{ url_for('static', filename='svg/grafico_barras.png') }}" alt="Gráfico de barras">
+        <div id="grafico_barras" style="height: 320px;"></div>
     </div>
 </div>
 
 <div class="menuInferior">
     <a href="{{ url_for('index') }}" class="botonMenu">Volver al inicio</a>
 </div>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script src="{{ url_for('static', filename='js/estadisticas.js') }}"></script>
 {% endblock %}
