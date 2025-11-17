@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de avisos</title>
+    <link rel="stylesheet" href="/css/estilo.css">
+</head>
+
+<body>
+
+<header class="menu">
+    <h1>Sistema de Gestión de Adopción de Mascotas</h1>
+    <hr>
+</header>
+
+<nav class="navbar">
+    <a href="/">Inicio</a>
+    <a href="/">Listado</a>
+    <a href="/">Agregar Aviso</a>
+    <a href="/">Estadísticas</a>
+</nav>
+
+<main class="contenido">
+
+    <section>
+        <h2>Listado de avisos de adopción</h2>
+        <p>Presione "Evaluar" para regitrar una nota a cada aviso:</p>
+        <p class="nota-mini">
+            <small>Si aparece "<strong>-</strong>" significa que el aviso aún no tiene notas.</small>
+        </p>
+
+        <table id="tabla_listado_adopciones">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha Publicación</th>
+                <th>Sector</th>
+                <th>Cantidad</th>
+                <th>Tipo</th>
+                <th>Edad</th>
+                <th>Comuna</th>
+                <th>Nota</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+
+            <tbody id="tabla-avisos">
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+<div id="modal-evaluacion" class="modal oculto">
+    <div class="modal-contenido">
+        <h3>Evaluacion</h3>
+        <p>Seleccione una nota:</p>
+
+        <div class="notas-grid">
+            <button class="nota-boton" onclick="seleccionarNota(1)">1</button>
+            <button class="nota-boton" onclick="seleccionarNota(2)">2</button>
+            <button class="nota-boton" onclick="seleccionarNota(3)">3</button>
+            <button class="nota-boton" onclick="seleccionarNota(4)">4</button>
+            <button class="nota-boton" onclick="seleccionarNota(5)">5</button>
+            <button class="nota-boton" onclick="seleccionarNota(6)">6</button>
+            <button class="nota-boton" onclick="seleccionarNota(7)">7</button>
+        </div>
+
+        <p id="mensaje-estado" class="mensaje-exito"></p>
+
+        <div class="botones-modal">
+            <button id="btnConfirmar" class="boton boton-primario" onclick="confirmarNota()">Confirmar</button>
+            <button id="btnCancelar" class="boton boton-secundario" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/listado.js"></script>
+
+</body>
+</html>
